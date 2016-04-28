@@ -1,0 +1,225 @@
+package Pokemon;
+
+import java.util.Random;
+
+class Ataque{
+	private String nome;
+	private double dano;
+	
+	public void preencheNome(String nome){
+		this.nome = nome;
+	}
+	
+	public String getNomeAtaque(){
+		return nome;
+	}
+	
+	public void preencheDano(double dano){
+		this.dano = dano;
+	}
+	
+	public double getDano(){
+		return dano;
+	}
+}
+
+class Pokemon {
+	private String nome;
+	private double HP = 100.0;
+	private int ataqueAtual = 0;
+	private Ataque ataques[] = new Ataque[4];
+	
+	public void nomePokemon(String name){
+		nome = name;
+	}
+	
+	public double getHp(){
+		return HP;
+	}
+	
+	public String getNomePokemon(){
+		return nome;
+	}
+	
+	public void itemCura(){
+		HP += 20.0;
+	}
+	
+	public void dano(double damage){
+		HP -= damage;
+	}
+	
+	public boolean vivo(){
+		if(HP < 0){
+			return false;
+		}
+		return true;
+	}
+	
+	public void criaVetorAtaques(){
+		for(int i = 0; i < ataques.length; i ++){
+			ataques[i] = new Ataque();
+		}
+	}
+	
+	public void preencheAtaques(String[] nomes, double[] hits){
+		for(int i = 0; i < 4; i ++){
+			ataques[i].preencheNome(nomes[i]);
+			ataques[i].preencheDano(hits[i]);
+		}
+	}
+	
+	public String getAtaqueAtual(){
+		return ataques[ataqueAtual].getNomeAtaque(); 
+	}
+	
+	public void mudaAtaqueAtual(){
+		if(ataqueAtual == 3)
+			ataqueAtual = 0;
+		else
+			ataqueAtual ++; 
+		//Como simplificacao, foi determinado que ele somente avanca para o proximo
+		//do vetor de ataques.
+	}
+	
+	public double usarAtaqueAtual(){
+		return ataques[ataqueAtual].getDano(); 
+	}
+	
+	public double usarAtaqueRandom(){
+		Random gerador = new Random();
+		return ataques[gerador.nextInt(4)].getDano();
+	}
+}
+
+public class Treinador {
+	private String id;
+	private int pokeAtual = 0;
+	private int pokeVivos = 4;
+	private Pokemon[] pokemons = new Pokemon[4];
+	
+	//Para nao se tornar repetitivo demais, foram colocados somente 4 pokemons 
+	//por treinador.
+	
+	public Treinador(String nome){
+		id = nome;
+	}
+	
+	public String getNome(){
+		return id;
+	}
+	
+	public double getVida(){
+		return pokemons[pokeAtual].getHp();
+	}
+	
+	public String getPokemonAtual(){
+		return pokemons[pokeAtual].getNomePokemon();
+	}
+	
+	public String getAtaque(){
+		return pokemons[pokeAtual].getAtaqueAtual();
+	}
+	
+	public int getPokeAtual(){
+		return pokeAtual;
+	}
+	
+	public void mudaPokeVivos(){
+		pokeVivos = 1;
+	}
+	public void criaPokemon(){
+		pokemons[pokeAtual] = new Pokemon();
+	}
+	
+	public void criaVetorPokemons(){
+		for(int i = 0; i < pokemons.length; i ++){
+			pokemons[i] = new Pokemon();
+		}
+	}
+	
+	public void preenchePokemons(String[] nomes){
+		for(int i = 0; i < pokemons.length; i ++){
+			pokemons[i].nomePokemon(nomes[i]);
+		}
+	}
+	
+	public void preenchePokemon(String nome){
+			pokemons[pokeAtual].nomePokemon(nome);
+	}
+	
+	public void ataquesPokemons(String[][] ataques, double[][] dano){
+		for(int j = 0; j < pokemons.length; j ++){
+			pokemons[j].criaVetorAtaques();
+			pokemons[j].preencheAtaques(ataques[j], dano[j]);
+		}
+	}
+	
+	public void ataquePokemon(String[] ataques, double[] dano){
+		pokemons[pokeAtual].criaVetorAtaques();
+		pokemons[pokeAtual].preencheAtaques(ataques, dano);
+	}
+		
+	public void mudaPokemon(){	
+		while(pokemons[pokeAtual].vivo() == false){
+			pokeAtual ++;
+			if(pokeAtual == 4){
+				pokeAtual = 0;					
+			}
+		}
+		//Novamente para simplificar, foi adotado que ele somente avanca no vetor
+		//de pokemons, e ja assume que a funcao so eh chamada quando o numero de 
+		//pokemons vivos eh maior que zero.
+	}
+	
+	public int tomarHit(double hit){
+		pokemons[pokeAtual].dano(hit); 
+		if(pokemons[pokeAtual].vivo() == false){
+			pokeVivos --;
+			if(pokeVivos > 0){
+				if(pokeAtual == 4)
+					pokeAtual = 0;
+				while(pokemons[pokeAtual].vivo() == false){
+					pokeAtual ++;
+					if(pokeAtual == 4){
+						pokeAtual = 0;					
+					}
+				}
+				return 2;
+			}
+			else
+				return 0;
+		}
+		return 1;
+		//Trata-se de uma funcao int pois sua resposta determina o evento que sera
+		//gerado, como se percebe na classe Batalha.
+	}
+	
+	public int tomaHit(double hit){
+		pokemons[pokeAtual].dano(hit); 
+		if(pokemons[pokeAtual].vivo() == false){
+			pokeVivos --;
+			return 0;
+		}
+		return 1;
+		//Trata-se de uma funcao int pois sua resposta determina o evento que sera
+		//gerado, como se percebe na classe Batalha.
+	}
+	
+	public double acertarHit(){
+		double auxiliar;
+		auxiliar = pokemons[pokeAtual].usarAtaqueAtual();
+		pokemons[pokeAtual].mudaAtaqueAtual();
+		return auxiliar;
+		//O uso do auxiliar se da somente para que se mude de ataque apos o seu uso,
+		//para evitar que se usasse sempre somente o ataque mais forte.
+	}
+	
+	public double acertaHit(){
+		return pokemons[pokeAtual].usarAtaqueRandom();
+	}
+	
+	public void recuperaVida(){
+		pokemons[pokeAtual].itemCura();
+	}
+}
