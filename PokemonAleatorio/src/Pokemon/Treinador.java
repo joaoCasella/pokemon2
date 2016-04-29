@@ -6,16 +6,13 @@ class Ataque{
 	private String nome;
 	private double dano;
 	
-	public void preencheNome(String nome){
+	public Ataque(String nome, double dano){
 		this.nome = nome;
+		this.dano = dano;
 	}
 	
 	public String getNomeAtaque(){
 		return nome;
-	}
-	
-	public void preencheDano(double dano){
-		this.dano = dano;
 	}
 	
 	public double getDano(){
@@ -27,10 +24,15 @@ class Pokemon {
 	private String nome;
 	private double HP = 100.0;
 	private int ataqueAtual = 0;
+	private Random gerador = new Random();
 	private Ataque ataques[] = new Ataque[4];
 	
-	public void nomePokemon(String name){
-		nome = name;
+	public Pokemon(String nome, String ataque, double dano, String ataque2, double dano2, String ataque3, double dano3, String ataque4, double dano4){
+		this.nome = nome;
+		ataques[0] = new Ataque(ataque, dano);
+		ataques[1] = new Ataque(ataque2, dano2);
+		ataques[2] = new Ataque(ataque3, dano3);
+		ataques[3] = new Ataque(ataque4, dano4);
 	}
 	
 	public double getHp(){
@@ -50,23 +52,10 @@ class Pokemon {
 	}
 	
 	public boolean vivo(){
-		if(HP < 0){
+		if(HP <= 0){
 			return false;
 		}
 		return true;
-	}
-	
-	public void criaVetorAtaques(){
-		for(int i = 0; i < ataques.length; i ++){
-			ataques[i] = new Ataque();
-		}
-	}
-	
-	public void preencheAtaques(String[] nomes, double[] hits){
-		for(int i = 0; i < 4; i ++){
-			ataques[i].preencheNome(nomes[i]);
-			ataques[i].preencheDano(hits[i]);
-		}
 	}
 	
 	public String getAtaqueAtual(){
@@ -87,7 +76,6 @@ class Pokemon {
 	}
 	
 	public double usarAtaqueRandom(){
-		Random gerador = new Random();
 		return ataques[gerador.nextInt(4)].getDano();
 	}
 }
@@ -96,13 +84,33 @@ public class Treinador {
 	private String id;
 	private int pokeAtual = 0;
 	private int pokeVivos = 4;
+	private int coordenadax = 0;
+	private int coordenaday = 0;
 	private Pokemon[] pokemons = new Pokemon[4];
+	private boolean selvagem;
 	
 	//Para nao se tornar repetitivo demais, foram colocados somente 4 pokemons 
 	//por treinador.
 	
-	public Treinador(String nome){
-		id = nome;
+	public Treinador(String id, String poke, String ataque, double dano, String ataque2, double dano2, String ataque3, double dano3, String ataque4, double dano4, 
+			String poke2, String ataque21, double dano21, String ataque22, double dano22, String ataque23, double dano23, String ataque24, double dano24,
+			String poke3, String ataque31, double dano31, String ataque32, double dano32, String ataque33, double dano33, String ataque34, double dano34, 
+			String poke4, String ataque41, double dano41, String ataque42, double dano42, String ataque43, double dano43, String ataque44, double dano44){
+		this.id = id;
+		selvagem = false;
+
+		pokemons[0] = new Pokemon(poke, ataque, dano, ataque2, dano2, ataque3, dano3, ataque4, dano4);
+		pokemons[1] = new Pokemon(poke2, ataque21, dano21, ataque22, dano22, ataque23, dano23, ataque24, dano24);
+		pokemons[2] = new Pokemon(poke3, ataque31, dano31, ataque32, dano32, ataque33, dano33, ataque34, dano34);
+		pokemons[3] = new Pokemon(poke4, ataque41, dano41, ataque42, dano42, ataque43, dano43, ataque44, dano44);
+	}
+	
+	public Treinador(String id, String poke, String ataque, double dano, String ataque2, double dano2, String ataque3, double dano3, String ataque4, double dano4){
+		this.id = id;
+		selvagem = true;
+		pokeVivos = 1;
+		
+		pokemons[0] = new Pokemon(poke, ataque, dano, ataque2, dano2, ataque3, dano3, ataque4, dano4);
 	}
 	
 	public String getNome(){
@@ -121,45 +129,14 @@ public class Treinador {
 		return pokemons[pokeAtual].getAtaqueAtual();
 	}
 	
-	public int getPokeAtual(){
-		return pokeAtual;
+	public int getPokeVivos(){
+		return pokeVivos;
 	}
 	
-	public void mudaPokeVivos(){
-		pokeVivos = 1;
-	}
-	public void criaPokemon(){
-		pokemons[0] = new Pokemon();
+	public boolean getSelvagem(){
+		return selvagem;
 	}
 	
-	public void criaVetorPokemons(){
-		for(int i = 0; i < pokemons.length; i ++){
-			pokemons[i] = new Pokemon();
-		}
-	}
-	
-	public void preenchePokemons(String[] nomes){
-		for(int i = 0; i < pokemons.length; i ++){
-			pokemons[i].nomePokemon(nomes[i]);
-		}
-	}
-	
-	public void preenchePokemon(String nome){
-			pokemons[0].nomePokemon(nome);
-	}
-	
-	public void ataquesPokemons(String[][] ataques, double[][] dano){
-		for(int j = 0; j < pokemons.length; j ++){
-			pokemons[j].criaVetorAtaques();
-			pokemons[j].preencheAtaques(ataques[j], dano[j]);
-		}
-	}
-	
-	public void ataquePokemon(String[] ataques, double[] dano){
-		pokemons[pokeAtual].criaVetorAtaques();
-		pokemons[pokeAtual].preencheAtaques(ataques, dano);
-	}
-		
 	public void mudaPokemon(){	
 		while(pokemons[pokeAtual].vivo() == false){
 			pokeAtual ++;
@@ -172,51 +149,50 @@ public class Treinador {
 		//pokemons vivos eh maior que zero.
 	}
 	
-	public int tomarHit(double hit){
-		pokemons[pokeAtual].dano(hit); 
+	public void tomarHit(double hit){
+		pokemons[pokeAtual].dano(hit);
 		if(pokemons[pokeAtual].vivo() == false){
 			pokeVivos --;
-			if(pokeVivos > 0){
-				if(pokeAtual == 4)
-					pokeAtual = 0;
-				while(pokemons[pokeAtual].vivo() == false){
-					pokeAtual ++;
-					if(pokeAtual == 4){
-						pokeAtual = 0;					
-					}
-				}
-				return 2;
-			}
-			else
-				return 0;
 		}
-		return 1;
-		//Trata-se de uma funcao int pois sua resposta determina o evento que sera
-		//gerado, como se percebe na classe Batalha.
 	}
 	
-	public int tomaHit(double hit){
-		pokemons[pokeAtual].dano(hit); 
-		if(pokemons[pokeAtual].vivo() == false){
-			pokeVivos --;
-			return 0;
+	public boolean acertarHit(Treinador trainer){
+		if(selvagem == false){
+			trainer.tomarHit(pokemons[pokeAtual].usarAtaqueAtual());
+			pokemons[pokeAtual].mudaAtaqueAtual();
 		}
-		return 1;
-		//Trata-se de uma funcao int pois sua resposta determina o evento que sera
-		//gerado, como se percebe na classe Batalha.
+		else{
+			trainer.tomarHit(pokemons[pokeAtual].usarAtaqueRandom());
+		}
+		if(trainer.getPokeVivos() == 0)
+			return false;
+		return true;
 	}
 	
-	public double acertarHit(){
-		double auxiliar;
-		auxiliar = pokemons[pokeAtual].usarAtaqueAtual();
-		pokemons[pokeAtual].mudaAtaqueAtual();
-		return auxiliar;
-		//O uso do auxiliar se da somente para que se mude de ataque apos o seu uso,
-		//para evitar que se usasse sempre somente o ataque mais forte.
+	public int mudaPosicao(int direcao, int mapa[][]){
+		if(direcao == 1){
+			coordenaday --;
+		}
+		if(direcao == 2){
+			coordenadax ++;
+		}
+		if(direcao == 3){
+			coordenaday ++;
+		}
+		else{
+			coordenadax --;
+		}
+		return mapa[coordenadax][coordenaday];
+		//1 sobe, 2 direita, 3 desce, 4 esquerda.
 	}
 	
-	public double acertaHit(){
-		return pokemons[pokeAtual].usarAtaqueRandom();
+	public boolean probabilidadeGrama(Random generator){
+		double probabilidade = 0.5;
+		
+		if(generator.nextDouble() < probabilidade)
+			return true;
+		else
+			return false;
 	}
 	
 	public void recuperaVida(){
